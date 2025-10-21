@@ -5,6 +5,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signInWithPopup,
   User as FirebaseUser
 } from 'firebase/auth';
@@ -78,6 +79,24 @@ export async function resetPassword(email: string): Promise<void> {
 export async function signInWithGoogle(): Promise<AuthUser> {
   try {
     const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+    
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL
+    };
+  } catch (error: any) {
+    throw new Error(getAuthErrorMessage(error.code));
+  }
+}
+
+// GitHub Sign In
+export async function signInWithGitHub(): Promise<AuthUser> {
+  try {
+    const provider = new GithubAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
     

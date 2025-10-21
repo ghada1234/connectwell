@@ -1,12 +1,36 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, User, Heart, Calendar, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Menu, X, User, Heart, Calendar, Users, LogOut } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { logoutUser } from '@/lib/auth';
 
 export default function Navigation() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+      setUserEmail(user?.email || null);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -36,11 +60,14 @@ export default function Navigation() {
             {isLoggedIn ? (
               <>
                 <Link href="/bookings" className="text-gray-700 hover:text-indigo-600 font-medium transition">
-                  <Calendar className="inline-block h-5 w-5" />
+                  My Bookings
                 </Link>
-                <Link href="/profile" className="text-gray-700 hover:text-indigo-600 font-medium transition">
-                  <User className="inline-block h-5 w-5" />
-                </Link>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">{userEmail?.split('@')[0]}</span>
+                  <button onClick={handleLogout} className="text-gray-700 hover:text-indigo-600 font-medium transition">
+                    <LogOut className="inline-block h-5 w-5" />
+                  </button>
+                </div>
               </>
             ) : (
               <>
@@ -87,9 +114,9 @@ export default function Navigation() {
                 <Link href="/bookings" className="block px-3 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
                   My Bookings
                 </Link>
-                <Link href="/profile" className="block px-3 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
-                  Profile
-                </Link>
+                <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
+                  Logout
+                </button>
               </>
             ) : (
               <>

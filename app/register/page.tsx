@@ -2,11 +2,16 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { registerUser, signInWithGoogle } from '@/lib/auth';
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,14 +19,44 @@ export default function RegisterPage() {
     confirmPassword: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
-    // TODO: Implement authentication
-    console.log('Registration attempt:', formData);
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await registerUser(formData.email, formData.password, formData.name);
+      router.push('/therapists');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      await signInWithGoogle();
+      router.push('/therapists');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,6 +68,12 @@ export default function RegisterPage() {
         </div>
 
         <div className="card">
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -136,8 +177,15 @@ export default function RegisterPage() {
               </label>
             </div>
 
-            <button type="submit" className="w-full btn-primary py-3 text-lg">
-              Create Account
+            <button type="submit" disabled={loading} className="w-full btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+              {loading ? (
+                <>
+                  <Loader2 className="inline-block h-5 w-5 mr-2 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                'Create Account'
+              )}
             </button>
           </form>
 
@@ -152,7 +200,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="btn-secondary py-2">
+              <button type="button" onClick={handleGoogleSignIn} disabled={loading} className="btn-secondary py-2 disabled:opacity-50">
                 <svg className="h-5 w-5 mr-2 inline-block" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>

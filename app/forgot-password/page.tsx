@@ -2,17 +2,28 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2 } from 'lucide-react';
+import { resetPassword } from '@/lib/auth';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement password reset
-    console.log('Password reset for:', email);
-    setSubmitted(true);
+    setError('');
+    setLoading(true);
+
+    try {
+      await resetPassword(email);
+      setSubmitted(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,8 +36,15 @@ export default function ForgotPasswordPage() {
 
         <div className="card">
           {!submitted ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
+            <>
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
@@ -44,8 +62,15 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              <button type="submit" className="w-full btn-primary py-3 text-lg">
-                Send Reset Link
+              <button type="submit" disabled={loading} className="w-full btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? (
+                  <>
+                    <Loader2 className="inline-block h-5 w-5 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Reset Link'
+                )}
               </button>
 
               <Link
@@ -56,6 +81,7 @@ export default function ForgotPasswordPage() {
                 Back to login
               </Link>
             </form>
+            </>
           ) : (
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

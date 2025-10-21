@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Heart, MessageCircle, Search, Plus, TrendingUp } from 'lucide-react';
+import { Heart, MessageCircle, Search, Plus, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 
 interface Post {

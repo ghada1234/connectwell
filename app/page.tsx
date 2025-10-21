@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Search, Heart, Users, Calendar, Sparkles, Globe, Shield, Clock } from 'lucide-react';
+import { Search, Heart, Users, Calendar, Sparkles, Globe, Shield, Clock, Video, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import TherapistCard from '@/components/TherapistCard';
 import SearchFilters from '@/components/SearchFilters';

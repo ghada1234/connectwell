@@ -123,10 +123,10 @@ export default function CommunityPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            <button className="w-full btn-primary py-3">
+            <Link href="/community/new" className="w-full btn-primary py-3 block text-center">
               <Plus className="inline-block h-5 w-5 mr-2" />
               New Post
-            </button>
+            </Link>
 
             <div className="card">
               <h3 className="font-bold text-gray-900 mb-4">Categories</h3>

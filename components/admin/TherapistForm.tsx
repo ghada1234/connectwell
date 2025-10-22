@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Therapist } from '@/lib/types';
 import { LANGUAGES } from '@/lib/data/languages';
 import { NATIONALITIES } from '@/lib/data/nationalities';

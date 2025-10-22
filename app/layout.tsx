@@ -29,17 +29,17 @@ export default function RootLayout({
               <div>
                 <h4 className="font-semibold mb-3">Quick Links</h4>
                 <ul className="space-y-2 text-gray-400">
-                  <li><a href="/therapists" className="hover:text-white transition">Find Therapists</a></li>
-                  <li><a href="/community" className="hover:text-white transition">Community</a></li>
-                  <li><a href="/about" className="hover:text-white transition">About Us</a></li>
+                  <li><Link href="/therapists" className="hover:text-white transition">Find Therapists</Link></li>
+                  <li><Link href="/community" className="hover:text-white transition">Community</Link></li>
+                  <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-semibold mb-3">Support</h4>
                 <ul className="space-y-2 text-gray-400">
-                  <li><a href="/help" className="hover:text-white transition">Help Center</a></li>
-                  <li><a href="/contact" className="hover:text-white transition">Contact</a></li>
-                  <li><a href="/privacy" className="hover:text-white transition">Privacy Policy</a></li>
+                  <li><Link href="/help" className="hover:text-white transition">Help Center</Link></li>
+                  <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
+                  <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
                 </ul>
               </div>
               <div>

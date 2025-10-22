@@ -1,7 +1,16 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
+
+// Check if Firebase is properly configured
+export const isFirebaseConfigured = () => {
+  return !!(
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'demo-api-key' &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  );
+};
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-api-key',
@@ -13,10 +22,10 @@ const firebaseConfig = {
 };
 
 // Only initialize if we're in the browser or have valid config
-let app;
-let auth: Auth;
-let db: Firestore;
-let storage: FirebaseStorage;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
+let storage: FirebaseStorage | undefined;
 
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -25,7 +34,9 @@ try {
   storage = getStorage(app);
 } catch (error) {
   // Silently fail during build time - Firebase will work when deployed with proper env vars
-  console.warn('Firebase initialization skipped (missing env vars)');
+  if (typeof window !== 'undefined') {
+    console.warn('Firebase initialization skipped (missing or invalid configuration)');
+  }
 }
 
 export { auth, db, storage };

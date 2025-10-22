@@ -9,7 +9,17 @@ import {
   signInWithPopup,
   User as FirebaseUser
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth, isFirebaseConfigured } from './firebase';
+
+// Check if Firebase is available
+function checkFirebase() {
+  if (!isFirebaseConfigured()) {
+    throw new Error('Firebase is not configured. Please contact the administrator to set up authentication.');
+  }
+  if (!auth) {
+    throw new Error('Authentication service is not available. Please try again later.');
+  }
+}
 
 export interface AuthUser {
   uid: string;
@@ -20,8 +30,10 @@ export interface AuthUser {
 
 // Register new user
 export async function registerUser(email: string, password: string, name: string): Promise<AuthUser> {
+  checkFirebase();
+  
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth!, email, password);
     const user = userCredential.user;
     
     // Update profile with display name
@@ -42,8 +54,10 @@ export async function registerUser(email: string, password: string, name: string
 
 // Login user
 export async function loginUser(email: string, password: string): Promise<AuthUser> {
+  checkFirebase();
+  
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth!, email, password);
     const user = userCredential.user;
     
     return {
@@ -59,8 +73,10 @@ export async function loginUser(email: string, password: string): Promise<AuthUs
 
 // Logout user
 export async function logoutUser(): Promise<void> {
+  checkFirebase();
+  
   try {
-    await signOut(auth);
+    await signOut(auth!);
   } catch (error: any) {
     throw new Error('Failed to logout. Please try again.');
   }
@@ -68,8 +84,10 @@ export async function logoutUser(): Promise<void> {
 
 // Reset password
 export async function resetPassword(email: string): Promise<void> {
+  checkFirebase();
+  
   try {
-    await sendPasswordResetEmail(auth, email);
+    await sendPasswordResetEmail(auth!, email);
   } catch (error: any) {
     throw new Error(getAuthErrorMessage(error.code));
   }
@@ -77,9 +95,11 @@ export async function resetPassword(email: string): Promise<void> {
 
 // Google Sign In
 export async function signInWithGoogle(): Promise<AuthUser> {
+  checkFirebase();
+  
   try {
     const provider = new GoogleAuthProvider();
-    const userCredential = await signInWithPopup(auth, provider);
+    const userCredential = await signInWithPopup(auth!, provider);
     const user = userCredential.user;
     
     return {
@@ -95,9 +115,11 @@ export async function signInWithGoogle(): Promise<AuthUser> {
 
 // GitHub Sign In
 export async function signInWithGitHub(): Promise<AuthUser> {
+  checkFirebase();
+  
   try {
     const provider = new GithubAuthProvider();
-    const userCredential = await signInWithPopup(auth, provider);
+    const userCredential = await signInWithPopup(auth!, provider);
     const user = userCredential.user;
     
     return {
@@ -113,7 +135,7 @@ export async function signInWithGitHub(): Promise<AuthUser> {
 
 // Get current user
 export function getCurrentUser(): FirebaseUser | null {
-  return auth.currentUser;
+  return auth?.currentUser || null;
 }
 
 // Helper function to get user-friendly error messages

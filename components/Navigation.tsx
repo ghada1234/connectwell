@@ -17,6 +17,8 @@ export default function Navigation() {
   const [isAdminUser, setIsAdminUser] = useState(false);
 
   useEffect(() => {
+    if (!auth) return;
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
       setUserEmail(user?.email || null);

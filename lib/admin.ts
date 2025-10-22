@@ -14,6 +14,8 @@ export function isAdmin(email: string | null): boolean {
 
 // Add new therapist
 export async function addTherapist(therapistData: Omit<Therapist, 'id'>): Promise<string> {
+  if (!db) throw new Error('Database not initialized');
+  
   try {
     const docRef = await addDoc(collection(db, 'therapists'), {
       ...therapistData,
@@ -28,6 +30,8 @@ export async function addTherapist(therapistData: Omit<Therapist, 'id'>): Promis
 
 // Update therapist
 export async function updateTherapist(id: string, therapistData: Partial<Therapist>): Promise<void> {
+  if (!db) throw new Error('Database not initialized');
+  
   try {
     const therapistRef = doc(db, 'therapists', id);
     await updateDoc(therapistRef, {
@@ -41,6 +45,8 @@ export async function updateTherapist(id: string, therapistData: Partial<Therapi
 
 // Delete therapist
 export async function deleteTherapist(id: string): Promise<void> {
+  if (!db) throw new Error('Database not initialized');
+  
   try {
     await deleteDoc(doc(db, 'therapists', id));
   } catch (error: any) {
@@ -50,6 +56,8 @@ export async function deleteTherapist(id: string): Promise<void> {
 
 // Get all therapists from Firestore
 export async function getAllTherapists(): Promise<Therapist[]> {
+  if (!db) throw new Error('Database not initialized');
+  
   try {
     const querySnapshot = await getDocs(collection(db, 'therapists'));
     const therapists: Therapist[] = [];
@@ -69,6 +77,8 @@ export async function getAllTherapists(): Promise<Therapist[]> {
 
 // Get single therapist
 export async function getTherapist(id: string): Promise<Therapist | null> {
+  if (!db) throw new Error('Database not initialized');
+  
   try {
     const docRef = doc(db, 'therapists', id);
     const docSnap = await getDoc(docRef);

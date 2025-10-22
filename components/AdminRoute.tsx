@@ -17,6 +17,12 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      router.push('/admin/login');
+      return;
+    }
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push('/admin/login');

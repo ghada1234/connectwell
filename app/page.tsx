@@ -480,11 +480,11 @@ export default function Home() {
             Join thousands who have found the support they need
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register" className="btn-primary bg-white text-indigo-600 hover:bg-gray-100 px-8 py-3 text-lg">
-              Get Started Free
-            </Link>
-            <Link href="/therapists" className="btn-outline border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3 text-lg">
+            <Link href="/therapists" className="btn-primary bg-white text-indigo-600 hover:bg-gray-100 px-8 py-3 text-lg">
               Browse Therapists
+            </Link>
+            <Link href="/ai-match" className="btn-outline border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3 text-lg">
+              Try AI Matching
             </Link>
           </div>
         </div>

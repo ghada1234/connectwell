@@ -3,21 +3,24 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Menu, X, User, Heart, Calendar, Users, LogOut } from 'lucide-react';
+import { Menu, X, User, Heart, Calendar, Users, LogOut, Shield } from 'lucide-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { logoutUser } from '@/lib/auth';
+import { isAdmin } from '@/lib/admin';
 
 export default function Navigation() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAdminUser, setIsAdminUser] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
       setUserEmail(user?.email || null);
+      setIsAdminUser(isAdmin(user?.email || null));
     });
 
     return () => unsubscribe();
@@ -62,6 +65,12 @@ export default function Navigation() {
                 <Link href="/bookings" className="text-gray-700 hover:text-indigo-600 font-medium transition">
                   My Bookings
                 </Link>
+                {isAdminUser && (
+                  <Link href="/admin/dashboard" className="text-purple-700 hover:text-purple-900 font-medium transition flex items-center gap-1">
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Link>
+                )}
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">{userEmail?.split('@')[0]}</span>
                   <button onClick={handleLogout} className="text-gray-700 hover:text-indigo-600 font-medium transition">
@@ -114,6 +123,12 @@ export default function Navigation() {
                 <Link href="/bookings" className="block px-3 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
                   My Bookings
                 </Link>
+                {isAdminUser && (
+                  <Link href="/admin/dashboard" className="block px-3 py-2 text-purple-700 hover:bg-purple-50 hover:text-purple-900 rounded-md font-medium">
+                    <Shield className="inline-block h-4 w-4 mr-2" />
+                    Admin Panel
+                  </Link>
+                )}
                 <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
                   Logout
                 </button>
